@@ -5,11 +5,12 @@ import (
 	"github.com/chenqinghe/baidu-ai-go-sdk/vision"
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 var (
-	BaiduAiApiKey = "is6NaY4E8KPdhYcKdeHCDA0d"
-	BaiduAiSecretKey = "fW9vVdB5ESMVF0P3kPRjBpgR8k7vW15G"
+	BaiduAiApiKey = "grF7SveGj2LIwIYobfNBPO9n"
+	BaiduAiSecretKey = "iUDZHYH8qhWWWuUc9m9A7oPcmzdzkRGH"
 )
 
 type Result struct {
@@ -19,32 +20,31 @@ type Result struct {
 
 }
 
-func GetStrByBaiduAi(picPath string) (string, error) {
+func GetStrByBaiduAi(picPath string) (string, string, error) {
 	ocrClient := ocr.NewOCRClient(BaiduAiApiKey, BaiduAiSecretKey)
 	pic, err := vision.FromFile(picPath)
 	if err != nil {
-		return "", err
+		return "","", err
 	}
 	ret, err := ocrClient.GeneralRecognizeBasic(pic)
 	if err != nil {
-		return "", err
+		return "","", err
 	}
-	return ret.String(), nil
+	return picPath, ret.String(), nil
 }
 
-func DealOcrRet(ocrRet string) {
+func DealOcrRet(picPath, ocrRet string) (string, string) {
 	var (
 		result Result
 		resultStr string
-		tmpCount int64
 	)
+	tPicSlice := strings.Split(picPath, "/")
+	picName := tPicSlice[len(tPicSlice)-1]
+	voiceName := strings.Split(picName,".")[0]
 	json.Unmarshal([]byte(ocrRet), &result)
 	for _, val := range result.WordsResult {
-		tmpCount += 1
-		resultStr += val["words"] + " "
-		if tmpCount % 5 == 0 {
-			resultStr += "\n"
-		}
+		resultStr += val["words"]
 	}
-	fmt.Println(resultStr)
+	fmt.Printf(resultStr)
+	return voiceName, resultStr
 }

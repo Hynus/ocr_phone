@@ -14,8 +14,12 @@ import (
 
 var (
 	savePathPhone = "/sdcard/from_ADB/screenshot_"
-	savePathPC = "E:/ACA/Learning/MyGoLang/MyGo/src/ocr_phone/images/screenshot_"
-	cutPicPath = "E:/ACA/Learning/MyGoLang/MyGo/src/ocr_phone/images/after_cut/cut_"
+	//for macOS
+	savePathPC = "/Users/sunyh/MyWork/MyGolang/src/ocr_phone/images/screenshot_"
+	cutPicPath = "/Users/sunyh/MyWork/MyGolang/src/ocr_phone/images/after_cut/cut_"
+	//for windows
+	//savePathPC = "E:/ACA/Learning/MyGoLang/MyGo/src/ocr_phone/images/screenshot_"
+	//cutPicPath = "E:/ACA/Learning/MyGoLang/MyGo/src/ocr_phone/images/after_cut/cut_"
 	topLeftCornerX = 45
 	topLeftCornerY = 125
 	LowerRightCornerX = 1040
@@ -57,8 +61,8 @@ func fileExist(path string) bool {
 func getScreenShotSaveInPhone() (string, bool) {
 	timestamp := time.Now().Unix()
 	filePathPhone := savePathPhone + strconv.FormatInt(timestamp, 10) + ".png"
-	params := []string{"/c", "adb", "shell", "/system/bin/screencap", "-p", filePathPhone}
-	saveBool :=  execCommand("cmd", params)
+	params := []string{"shell", "/system/bin/screencap", "-p", filePathPhone}
+	saveBool :=  execCommand("adb", params)
 	if saveBool {
 		return filePathPhone, true
 	}
@@ -69,8 +73,8 @@ func GetScreenShotSaveInPC() (string, bool) {
 	timestamp := time.Now().Unix()
 	filePathPC := savePathPC + strconv.FormatInt(timestamp, 10) + ".png"
 	filePathPhone, _ := getScreenShotSaveInPhone()
-	params := []string{"/c", "adb", "pull", filePathPhone, filePathPC}
-	saveBool := execCommand("cmd", params)
+	params := []string{"pull", filePathPhone, filePathPC}
+	saveBool := execCommand("adb", params)
 	if saveBool {
 		if fileExist(filePathPC) {
 			return filePathPC, true
